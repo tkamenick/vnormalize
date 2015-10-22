@@ -34,7 +34,7 @@ co(function*() {
     console.log(`${filename} is already encoded correctly`);
     process.exit(0);
   }
-  let renames = yield trash([sub_file, reencoded_file]);
+  let renames = yield trash([sub_file, filename]);
   for (let rename of renames) {
     console.log(`${rename.from} ${colors.green('⇨')} ${rename.to}`);
   }
