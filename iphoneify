@@ -1,0 +1,43 @@
+#!/usr/bin/env node
+"use strict";
+
+var co = require('co');
+var colors = require('colors/safe');
+var fs = require('fs');
+var path = require('path');
+var ffprobe = require('./ffprobe');
+var stat = require('./stat');
+var encode = require('./encode');
+var subtitles = require('./subtitles');
+var trash = require('./trash');
+
+var script = path.basename(__filename);
+var args = process.argv.slice(2);
+var cwd = process.cwd();
+
+if (args.length != 1) {
+  console.error(`Usage: ${script} <input file>`);
+  process.exit(1)
+}
+
+var filename = args[0];
+
+co(function*() {
+  yield stat(filename);
+  let sub_file = yield subtitles.download(filename);
+  if (sub_file) {
+    console.log(`${colors.green('⇩')} ${path.relative(cwd, sub_file)}`)
+  }
+  let metadata = yield ffprobe(filename);
+  let reencoded_file = yield encode(filename, metadata, sub_file);
+  if (!reencoded_file) {
+    console.log(`${filename} is already encoded correctly`);
+    process.exit(0);
+  }
+  let renames = yield trash([sub_file, reencoded_file]);
+  for (let rename of renames) {
+    console.log(`${path.relative(cwd, rename.from)} ${colors.green('⇨')} ${path.relative(cwd, rename.to)}`);
+  }
+}).catch(function(error) {
+  console.log(error);
+})
