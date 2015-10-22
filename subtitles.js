@@ -38,7 +38,7 @@ exports.download = function(filename) {
     if (results.length == 0) {
       return null;
     }
-    
+
     let sub_result = results[0];
     let sub_url = sub_result.SubDownloadLink;
     let sub_ext = sub_result.SubFormat;
