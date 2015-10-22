@@ -6,7 +6,6 @@ var zlib = require('zlib');
 var path = require('path');
 var http = require('http');
 
-
 function calculate_subtitle_filename(movie_filename, sub_ext) {
   let dir = path.dirname(movie_filename)
   let ext = path.extname(movie_filename);
