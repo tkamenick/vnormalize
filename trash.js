@@ -4,6 +4,7 @@ var path = require('path')
 
 var TRASH_FOLDER = path.join(process.env.HOME, '.Trash');
 var fs = require('fs');
+var cwd = process.cwd();
 
 var wrapper = function(file_or_files) {
   if (!Array.isArray(file_or_files)) {
@@ -25,7 +26,10 @@ var trash = function(file) {
       if (error) {
         reject(error);
       } else {
-        resolve({from: file, to: trash_file});
+        resolve({
+          from: path.relative(cwd, file),
+          to: path.relative(cwd, trash_file)
+        });
       }
     })
   });

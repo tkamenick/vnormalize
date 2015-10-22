@@ -36,7 +36,7 @@ co(function*() {
   }
   let renames = yield trash([sub_file, reencoded_file]);
   for (let rename of renames) {
-    console.log(`${path.relative(cwd, rename.from)} ${colors.green('⇨')} ${path.relative(cwd, rename.to)}`);
+    console.log(`${rename.from} ${colors.green('⇨')} ${rename.to}`);
   }
 }).catch(function(error) {
   console.log(error);
