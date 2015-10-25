@@ -5,9 +5,11 @@ var co = require('co');
 var colors = require('colors/safe');
 var fs = require('fs');
 var path = require('path');
+var ProgressBar = require('progress');
+
 var ffprobe = require('./ffprobe');
 var stat = require('./stat');
-var encode = require('./encode');
+var encoder = require('./encoder');
 var subtitles = require('./subtitles');
 var trash = require('./trash');
 
@@ -24,19 +26,35 @@ var filename = args[0];
 
 co(function*() {
   yield stat(filename);
+
   let sub_file = yield subtitles.download(filename);
   if (sub_file) {
     console.log(`${colors.green('⇩')} ${path.relative(cwd, sub_file)}`)
   }
+
   let metadata = yield ffprobe(filename);
-  let reencoded_file = yield encode(filename, metadata, sub_file);
-  if (!reencoded_file) {
-    console.log(`${filename} is already encoded correctly`);
-    process.exit(0);
-  }
-  let renames = yield trash([sub_file, filename]);
-  for (let rename of renames) {
-    console.log(`${rename.from} ${colors.green('⇨')} ${rename.to}`);
+
+  let progress_bar = new ProgressBar(':filename :bar :percent :etas', {
+    total: 10000,
+    width: 40,
+    incomplete: colors.bgWhite(' '),
+    complete: colors.bgGreen(' ')
+  });
+
+  let new_file = yield encoder.encode_with_progress_bar(
+    filename,
+    metadata,
+    sub_file,
+    progress_bar
+  );
+
+  if (new_file) {
+    let renames = yield trash([sub_file, filename]);
+    for (let rename of renames) {
+      console.log(`${rename.from} ${colors.green('⇨')} ${rename.to}`);
+    }
+  } else {
+    console.log(`${path.relative(cwd, filename)} is already encoded correctly`)
   }
 }).catch(function(error) {
   console.log(error);
