@@ -29,19 +29,17 @@ function http_get(url, filename) {
   })
 }
 
-exports.download = function(filename) {
-  return function*() {
-    let token = yield opensubtitles.login();
-    let results = yield opensubtitles.searchForFile(token, "eng", filename);
+exports.download = function*(filename) {
+  let token = yield opensubtitles.login();
+  let results = yield opensubtitles.searchForFile(token, "eng", filename);
 
-    if (results.length == 0) {
-      return null;
-    }
-
-    let sub_result = results[0];
-    let sub_url = sub_result.SubDownloadLink;
-    let sub_ext = sub_result.SubFormat;
-    let sub_filename = calculate_subtitle_filename(filename, sub_ext);
-    return http_get(sub_url, sub_filename);
+  if (results.length == 0) {
+    return null;
   }
+
+  let sub_result = results[0];
+  let sub_url = sub_result.SubDownloadLink;
+  let sub_ext = sub_result.SubFormat;
+  let sub_filename = calculate_subtitle_filename(filename, sub_ext);
+  return http_get(sub_url, sub_filename);
 }
