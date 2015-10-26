@@ -1,6 +1,7 @@
 "use strict";
 
 var ffmpeg = require('fluent-ffmpeg');
+var path = require('path');
 
 var DEFAULT_BITRATE = 256000;
 
@@ -27,6 +28,7 @@ var encode = function(filename, metadata, sub_file) {
       let reencoder = ffmpeg(filename);
       if (sub_file) {
         reencoder.input(sub_file);
+        //reencoder.inputOptions('-metadata:s:s:0 1 language=eng')
       }
       reencoder
         .videoCodec('copy')
@@ -55,6 +57,7 @@ var encode_with_progress_bar = function(filename, metadata, sub_file, progress_b
           reject(error);
         })
         .on('start', function(command) {
+          console.log(command);
           progress_bar.update(0, {filename: short_outfile});
         })
         .on('end', function() {

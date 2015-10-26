@@ -27,12 +27,16 @@ var filename = args[0];
 co(function*() {
   yield stat(filename);
 
+  console.log('getting metadata');
+  let metadata = yield ffprobe(filename);
+
+  console.log('looking for subs')
   let sub_file = yield subtitles.download(filename);
   if (sub_file) {
     console.log(`${colors.green('⇩')} ${path.relative(cwd, sub_file)}`)
   }
+  console.log('moving to encode step..')
 
-  let metadata = yield ffprobe(filename);
 
   let progress_bar = new ProgressBar(':filename :bar :percent :etas', {
     total: 10000,
