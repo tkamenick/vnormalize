@@ -17,7 +17,6 @@ function calculate_subtitle_filename(movie_filename, sub_ext) {
 function http_get(url, filename) {
   return new Promise(function(resolve, reject) {
     http.get(url, function(response) {
-      let gunzip = zlib.createGunzip();
       let outstream = fs.createWriteStream(filename);
       response.pipe(zlib.createGunzip()).pipe(outstream)
       outstream.on('close', function() {
