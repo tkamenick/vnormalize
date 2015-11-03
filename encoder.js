@@ -24,7 +24,7 @@ var encode = function(filename, metadata, sub_file) {
       }
     }
 
-    if (ac3_streams.length > 0 || sub_file) {
+    if (ac3_streams.length >= 0 || sub_file) {
       let reencoder = ffmpeg(filename);
       if (sub_file) {
         reencoder.input(sub_file);

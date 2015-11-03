@@ -5,24 +5,20 @@ var co = require('co');
 var colors = require('colors/safe');
 var fs = require('fs');
 var path = require('path');
-var ProgressBar = require('progress');
 
+var args = require('./args');
 var ffprobe = require('./ffprobe');
+var progress = require('./progress');
 var stat = require('./stat');
 var encoder = require('./encoder');
 var subtitles = require('./subtitles');
 var trash = require('./trash');
 
+var args = args();
+
 var script = path.basename(__filename);
-var args = process.argv.slice(2);
+var filename = args.file;
 var cwd = process.cwd();
-
-if (args.length != 1) {
-  console.error(`Usage: ${script} <input file>`);
-  process.exit(1)
-}
-
-var filename = args[0];
 
 co(function*() {
   yield stat(filename);
@@ -35,11 +31,9 @@ co(function*() {
   if (sub_file) {
     console.log(`${colors.green('⇩')} ${path.relative(cwd, sub_file)}`)
   }
-  console.log('moving to encode step..')
 
-
-  let progress_bar = new ProgressBar(':filename :bar :percent :etas', {
-    total: 10000,
+  let progress_bar = progress(':filename :bar :percent :etas', {
+    total: 1000,
     width: 40,
     incomplete: colors.bgWhite(' '),
     complete: colors.bgGreen(' ')
