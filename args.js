@@ -1,5 +1,7 @@
 "use strict";
-
+/**
+ * @return {Object} the command line arguments
+ */
 var argv = function() {
   return require('yargs')
     .usage('normalizes a video to h264/aac in an mkv container with subtitles.\n'
@@ -30,6 +32,11 @@ var argv = function() {
       describe: 'use if source bitrate cannot be determined',
       type: 'string',
       default: '256k'
+    })
+    .option('non-interactive', {
+      describe: 'no console output, only log output',
+      type: 'boolean',
+      default: false
     })
     .argv;
 }

@@ -8,7 +8,7 @@ var DEFAULT_BITRATE = 256000;
 var encode = function(filename, metadata, sub_file) {
     let container = metadata.format.format_long_name;
 
-    let ac3_streams = [];
+    let non_aac_audio = [];
     let bitrate = null;
     for(let stream of metadata.streams) {
       if (stream.codec_type == 'audio') {
@@ -18,13 +18,13 @@ var encode = function(filename, metadata, sub_file) {
         } else {
           bitrate = probed_bitrate;
         }
-        if (stream.codec_name === 'ac3') {
-          ac3_streams.push(stream);
+        if (stream.codec_name !== 'aac') {
+          non_aac_audio.push(stream);
         }
       }
     }
 
-    if (ac3_streams.length >= 0 || sub_file) {
+    if (non_aac_audio.length > 0 || sub_file) {
       let reencoder = ffmpeg(filename);
       if (sub_file) {
         reencoder.input(sub_file);
