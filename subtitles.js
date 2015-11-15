@@ -28,10 +28,10 @@ function http_get(url, filename) {
   })
 }
 
-exports.download = function(filename) {
+exports.download = function(filename, language) {
   return function*() {
     let token = yield opensubtitles.login();
-    let results = yield opensubtitles.searchForFile(token, "eng", filename);
+    let results = yield opensubtitles.searchForFile(token, language, filename);
 
     if (results.length == 0) {
       return null;

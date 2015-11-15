@@ -26,10 +26,12 @@ co(function*() {
   console.log('getting metadata');
   let metadata = yield ffprobe(filename);
 
-  console.log('looking for subs')
-  let sub_file = yield subtitles.download(filename);
-  if (sub_file) {
-    console.log(`${colors.green('⇩')} ${path.relative(cwd, sub_file)}`)
+  let sub_file = args.subtitle_file
+  if (args.subtitles && !sub_file) {
+    sub_file = yield subtitles.download(filename, args.language);
+    if (sub_file) {
+      console.log(`${colors.green('⇩')} ${path.relative(cwd, sub_file)}`)
+    }
   }
 
   let progress_bar = progress(':filename :bar :percent :etas', {

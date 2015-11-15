@@ -25,15 +25,16 @@ var argv = function() {
       type: 'string'
     })
     .option('sf', {
-      alias: 'subtitle-file',
-      describe: 'external subtitle file to include'
+      alias: 'subtitle_file',
+      describe: 'external subtitle file to include',
+      type: 'string'
     })
-    .option('audio-bitrate', {
+    .option('audio_bitrate', {
       describe: 'use if source bitrate cannot be determined',
       type: 'string',
       default: '256k'
     })
-    .option('non-interactive', {
+    .option('non_interactive', {
       describe: 'no console output, only log output',
       type: 'boolean',
       default: false
