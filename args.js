@@ -1,9 +1,17 @@
 "use strict";
 /**
+ * Command line processing module. Returns an {Object} containing a mapping
+ * of command line arguments to their values.
+ *
+ * @module args
+ */
+var yargs = require('yargs');
+
+/**
  * @return {Object} the command line arguments
  */
-var argv = function() {
-  return require('yargs')
+module.exports = function() {
+  return yargs
     .usage('normalizes a video to h264/aac in an mkv container with subtitles.\n'
            +'Usage: $0 -f video.mp4')
     .option('f', {
@@ -41,5 +49,3 @@ var argv = function() {
     })
     .argv;
 }
-
-module.exports = argv

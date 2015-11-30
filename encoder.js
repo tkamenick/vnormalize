@@ -1,11 +1,30 @@
 "use strict";
-
+/**
+ * Encode
+ *
+ * @module encoder
+ * @requires path
+ */
 var ffmpeg = require('fluent-ffmpeg');
 var path = require('path');
 
+/**
+ * The default audio bitrate, if the audio track bitrate cannot be determined.
+ * This can happen when the audio is encoded with a variable bitrate.
+ * @constant
+ * @default
+ */
 var DEFAULT_BITRATE = 256000;
 
-var encode = function(filename, metadata, sub_file) {
+/**
+ * Encodes a video if there are non aac streams or if there is a subtitle file
+ * to be added to the container
+ *
+ * @param {string} filename video filename
+ * @param {Object} metadata metadata of the video as returned by <tt>ffprobe</tt>
+ * @param {string} sub_file subtitle filename
+ */
+exports.encode = function(filename, metadata, sub_file) {
     let container = metadata.format.format_long_name;
 
     let non_aac_audio = [];
@@ -40,9 +59,9 @@ var encode = function(filename, metadata, sub_file) {
     }
 }
 
-var encode_with_progress_bar = function(filename, metadata, sub_file, progress_bar) {
+exports.encode_with_progress_bar = function(filename, metadata, sub_file, progress_bar) {
   return new Promise(function(resolve, reject) {
-    let encode_command = encode(filename, metadata, sub_file);
+    let encode_command = exports.encode(filename, metadata, sub_file);
     if (!encode_command) {
       resolve(null);
     } else {
@@ -71,9 +90,4 @@ var encode_with_progress_bar = function(filename, metadata, sub_file, progress_b
         .save(output_file);
     }
   });
-}
-
-module.exports = {
-  encode : encode,
-  encode_with_progress_bar : encode_with_progress_bar
 }
