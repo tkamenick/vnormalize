@@ -24,44 +24,42 @@ var DEFAULT_BITRATE = 256000;
  * @param {Object} metadata metadata of the video as returned by <tt>ffprobe</tt>
  * @param {string} sub_file subtitle filename
  */
-exports.encode = function(filename, metadata, sub_file) {
-    let container = metadata.format.format_long_name;
-
-    let non_aac_audio = [];
-    let bitrate = null;
-    for(let stream of metadata.streams) {
-      if (stream.codec_type == 'audio') {
-        let probed_bitrate = stream.bit_rate;
-        if (probed_bitrate == 'N/A') {
-          bitrate = DEFAULT_BITRATE;
-        } else {
-          bitrate = probed_bitrate;
-        }
-        if (stream.codec_name !== 'aac') {
-          non_aac_audio.push(stream);
-        }
+var encode = function(filename, metadata, sub_file) {
+  let non_aac_audio = [];
+  let bitrate = null;
+  for (let stream of metadata.streams) {
+    if (stream.codec_type == 'audio') {
+      let probed_bitrate = stream.bit_rate;
+      if (probed_bitrate == 'N/A') {
+        bitrate = DEFAULT_BITRATE;
+      } else {
+        bitrate = probed_bitrate;
+      }
+      if (stream.codec_name !== 'aac') {
+        non_aac_audio.push(stream);
       }
     }
+  }
 
-    if (non_aac_audio.length > 0 || sub_file) {
-      let reencoder = ffmpeg(filename);
-      if (sub_file) {
-        reencoder.input(sub_file);
-        reencoder.outputOptions('-metadata:s:s:0 language=eng')
-      }
-      reencoder
-        .videoCodec('copy')
-        .audioCodec('libfdk_aac')
-        .audioBitrate(bitrate / 1000)
-      return reencoder;
-    } else {
-      return null;
+  if (non_aac_audio.length > 0 || sub_file) {
+    let reencoder = ffmpeg(filename);
+    if (sub_file) {
+      reencoder.input(sub_file);
+      reencoder.outputOptions('-metadata:s:s:0 language=eng')
     }
+    reencoder
+      .videoCodec('copy')
+      .audioCodec('libfdk_aac')
+      .audioBitrate(bitrate / 1000)
+    return reencoder;
+  } else {
+    return null;
+  }
 }
 
-exports.encode_with_progress_bar = function(filename, metadata, sub_file, progress_bar) {
+var encode_with_progress_bar = function(filename, metadata, sub_file, progress_bar) {
   return new Promise(function(resolve, reject) {
-    let encode_command = exports.encode(filename, metadata, sub_file);
+    let encode_command = encode(filename, metadata, sub_file);
     if (!encode_command) {
       resolve(null);
     } else {
@@ -90,4 +88,9 @@ exports.encode_with_progress_bar = function(filename, metadata, sub_file, progre
         .save(output_file);
     }
   });
+}
+
+module.exports = {
+  encode : encode,
+  encode_with_progress_bar : encode_with_progress_bar
 }
